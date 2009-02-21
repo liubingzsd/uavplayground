@@ -1,11 +1,14 @@
 /**
- * This is a simple example that demonstrates the usage
- * of the UAV Playground FlightGearSender.
- * It controls FlightGear's aileron, elevator, rudder and
- * throttle via two virtual joysticks.
+ * This is a simple example that demonstrates UAV Playground
+ * FlightGearSender. It controls FlightGear's aileron, elevator,
+ * rudder and throttle via two virtual joysticks.
  * 
- * Have a look at the end of this code for some information
- * about setting up and starting FlightGear.
+ * The UAV Playground distribution contains all the files that you ned to try
+ * out this example application. If you don't have the distribution then first
+ * jump to the bottom of this code.
+ * 01 - Follow the installation instructions in the file UAVplayground-ReadMe-Installation.txt
+ * 02 - Start this application (FlightGear_Sender)
+ * 03 - Start FlightGear by double-clicking on Start-FlightGear-FligthGearSender.bat
  */
 
 import jaron.flightgear.*;
@@ -95,13 +98,7 @@ void destroy() {
 }
 
 /**
- * The following is a description of how you would setup and run FlightGear 1.9
- * to be used width this application.
- * It assumes that you've installed FlightGear in a directory that is referred
- * here as %PROGRAMFILES%\FlightGear.
- * 
  * 01 - Create a configuration file: %PROGRAMFILES%\FlightGear\data\Protocol\FlightGearSender-Protocol.xml
- * 
  * 02 - Copy this XML code into the configuration file:
 
 <?xml version="1.0"?>
@@ -135,11 +132,8 @@ void destroy() {
  </generic>
 </PropertyList>
   
- * 
- * 03 - Start this application (FlightGear_Sender)
- * 
- * 04 - Start FlightGear with the following script (replace the IP address
- *      127.0.0.1 with the address of the machine the this application runs on):
+ * 03 - Create a file Start-FlightGear-FligthGearSender.bat
+ * 04 - Copy this into the batch file (edit ip address if necessary):
 
 "%PROGRAMFILES%\FlightGear\bin\Win32\fgfs" ^
  "--fg-root=%PROGRAMFILES%\FlightGear\data" ^
