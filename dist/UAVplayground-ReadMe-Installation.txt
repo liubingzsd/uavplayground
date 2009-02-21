@@ -1,31 +1,37 @@
-UAV Playground
-==============
+UAV Playground 1.1
+==================
+
+Changes since version 1.0
+-------------------------
+- New GPS NMEA data import via a network connection to FlightGear
+- New GPS tracking in Google Earth via a HTTP connection to the UAV Playground
 
 Prerequisite
 ------------
 - Java JRE or JDK (http://java.sun.com/javase/)
 - Processing Development Environment (PDE) [optional] (http://www.processing.org)
 - FlightGear Flight Simulator (FG) [optional] (http://www.flightgear.org)
+- Google Earth [optional] (http://earth.google.com/)
 
 If you want to play around with the UAV Playground
 --------------------------------------------------
-- Install the Processing Development Environment (PDE)
+- Copy all the FlightGear files from the distribution to the location where you
+  installed FlightGear
 - Copy all the Processing files from the distribution to the location where you
   installed the PDE
 - Start Processing and choose File->Sketchbook->UAVplayground to open an example
   application
-- Follow the instructions in the examples (the FlightGear protocol files and the
-  batch files to start FlightGear are in the distribution's FlightGear directory)
+- Follow the instructions in the examples
   
 If you want to run UAVsim as a standalone application
 -----------------------------------------------------
-- If not already done, install the Java JRE or JDK
-- Install FlightGear
 - Copy all the FlightGear files from the distribution to the location where you
   installed FlightGear
 - Run the UAVsim.jar Java application (double click or via the console)
 - Run FlightGear with the Start-FlightGear-UAVsim.bat batch file (edit if
   necessary)
+- [Run Google Earth by double-clicking the Start-GoogleEarth-Tracking.kml file
+  or just open the file in Google Earth] (optional)
   
 About UAV Playground
 ====================
