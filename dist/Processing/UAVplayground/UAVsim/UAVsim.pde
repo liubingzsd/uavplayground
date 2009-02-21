@@ -1,62 +1,72 @@
 /**
- * The UAVsim implements a simple PID controller that controls
- * the pitch and roll axis of an airplane in the FlightGear
- * flight simulator.
- * In the UAVsim's manual mode FlightGear is controlled via two
- * virtual joysticks.
+ * The UAVsim implements a simple PID controller that controls the pitch and
+ * roll axis of an airplane in the FlightGear flight simulator.
  *
- * Have a look at the end of this code for some information
- * about setting up and starting FlightGear.
+ * The UAV Playground distribution contains all the files that you ned to try
+ * out this example application. If you don't have the distribution then first
+ * jump to the bottom of this code.
+ * 01 - Follow the installation instructions in the file UAVplayground-ReadMe-Installation.txt
+ * 02 - Start this application (UAVsim)
+ * 03 - Start FlightGear by double-clicking on Start-FlightGear-UAVsim.bat
+ * 04 - [Start Google Earth by double-clicking on Start-GoogleEarth-Tracking.kml] (optional)
+ * 05 - Use the virtual joysticks to control the flight simulator
+ * 06 - Click on on the Autopilot button if you want the autopilot to control the plane
  */
  
 import jaron.flightgear.*;
+import jaron.google.*;
+import jaron.gps.*;
 import jaron.gui.*;
 import jaron.pde.*;
 import jaron.uavsim.*;
 
 // Network connection defaults
-static String FlightGearIP ="127.0.0.1";
-static int FlightGearPort = 5556;
-static int UAVsimPort = 5555;
+String kFlightGearGenericIP ="127.0.0.1";
+int kFlightGearGenericPort = 5556;
+int kFlightGearNMEAPort = 5557;
+int kUAVsimPort = 5555;
+int kKMLProviderPort = 8080;
 
 // Autopilot PID processor default settings
-static final double kElevatorP = -2;
-static final double kElevatorI = -0.3;
-static final double kElevatorD = -0.75;
-static final double kAileronP = -1;
-static final double kAileronI = -0.05;
-static final double kAileronD = -0.75;
+double kElevatorP = -2;
+double kElevatorI = -0.3;
+double kElevatorD = -0.75;
+double kAileronP = -1;
+double kAileronI = -0.05;
+double kAileronD = -0.75;
 
 // Some labels/identifiers
-static final String kLabelPitch = "Pitch (FlightGear)";
-static final String kLabelElevator ="Elevator (Autopilot/PID)";
-static final String kLabelRoll = "Roll (FlightGear)";
-static final String kLabelAileron ="Aileron (Autopilot/PID";
+String kLabelPitch = "Pitch (FlightGear)";
+String kLabelElevator ="Elevator (Autopilot/PID)";
+String kLabelRoll = "Roll (FlightGear)";
+String kLabelAileron ="Aileron (Autopilot/PID";
 
-// PDE GUI defaults
-static final String kWindowTitle = "UAV Playground - UAVsim";
-static final int kWindowWidth = 330;
-static final int kWindowHeight = 620;
-static final int kFrameRate = 30;
+// GUI defaults
+String kWindowTitle = "UAV Playground - UAVsim";
+int kWindowWidth = 330;
+int kWindowHeight = 620;
+int kFrameRate = 30;
 
 // These are all the components that are used for the UAVsim
-ArtificialHorizon horizon;
-Autopilot autopilot;
-Display display;
-FlightGearReceiver receiver;
-FlightGearSender sender;
-Graph graphPitch;
-Graph graphRoll;
-Joystick stickRight;
-Joystick stickLeft;
-RadioButton switchAutopilot;
-RadioButton switchSticks;
-Slider pElevator;
-Slider iElevator;
-Slider dElevator;
-Slider pAileron;
-Slider iAileron;
-Slider dAileron;
+ArtificialHorizon horizon = null;
+Autopilot autopilot = null;
+Display display = null;
+FlightGearReceiver receiver = null;
+FlightGearSender sender = null;
+Graph graphPitch = null;
+Graph graphRoll = null;
+Joystick stickRight = null;
+Joystick stickLeft = null;
+RadioButton switchAutopilot = null;
+RadioButton switchSticks = null;
+Slider pElevator = null;
+Slider iElevator = null;
+Slider dElevator = null;
+Slider pAileron = null;
+Slider iAileron = null;
+Slider dAileron = null;
+FlightGearNMEAReceiver nmeaReceiver = null;
+GoogleEarthKMLProvider kmlProvider = null;
 
 // The PDE setup method
 void setup() {
@@ -76,6 +86,7 @@ void setup() {
   setupHorizon();
   setupSticks();
   setupAutopilot();
+  setupGPS();
   
   // Setup the UAV Playground component dependencies
   setupDependencies();
@@ -84,10 +95,10 @@ void setup() {
 // Flight Gear initialization
 void setupFlightGear() {
   // Setup and start the FlightGear data receiver
-  receiver = new FlightGearReceiver(UAVsimPort);
+  receiver = new FlightGearReceiver(kUAVsimPort);
 
   // Setup and start the FlightGear data sender
-  sender = new FlightGearSender(FlightGearIP, FlightGearPort);
+  sender = new FlightGearSender(kFlightGearGenericIP, kFlightGearGenericPort);
 }
 
 void setupDisplay() {
@@ -140,13 +151,13 @@ void setupSticks() {
 
 void setupAutopilot() {
   // Setup the sliders for the elevator gains
-  pElevator = new Slider(this, "P - Elevator", 75, 330);
+  pElevator = new Slider(this, "P - Elevator", 80, 330);
   pElevator.setBandwidthY(-2, 2);
   pElevator.setValue(kElevatorP); // gain here
-  iElevator = new Slider(this, "I - Elevator", 115, 330);
+  iElevator = new Slider(this, "I - Elevator", 120, 330);
   iElevator.setBandwidthY(-0.3, 0.3);
   iElevator.setValue(kElevatorI); // gain here
-  dElevator = new Slider(this, "D - Elevator", 155, 330);
+  dElevator = new Slider(this, "D - Elevator", 160, 330);
   dElevator.setBandwidthY(-1, 1);
   dElevator.setValue(kElevatorD); // gain here
 
@@ -186,6 +197,16 @@ void setupAutopilot() {
   // Setup an on/off switch and connect the autopilot to it
   switchAutopilot = new RadioButton(this, "Autopilot", 10, 410);
   switchAutopilot.addSignalListener(autopilot.getPower());
+}
+
+void setupGPS() {
+  // Setup the Google KML writer
+  kmlProvider = new GoogleEarthKMLProvider(kKMLProviderPort);
+  kmlProvider.setWritePlacemaks(false);
+
+  // Setup the FlightGear NMEA receiver and connect the KML writer to it
+  nmeaReceiver = new FlightGearNMEAReceiver(kFlightGearNMEAPort);
+  nmeaReceiver.addTrackpointListener(kmlProvider);
 }
 
 void setupDependencies() {
@@ -304,23 +325,15 @@ void mouseMoved() {
 
 // Destroy is called on applet exit
 void destroy() {
-  receiver.setDebug(true);
   receiver.shutDown();
-  
-  sender.setDebug(true);
   sender.shutDown();
+  nmeaReceiver.shutDown();
 }
 
 /**
- * The following is a description of how you would setup and run FlightGear 1.9
- * to be used width this application.
- * It assumes that you've installed FlightGear in a directory that is referred
- * here as %PROGRAMFILES%\FlightGear.
- * 
  * 01 - Create a configuration file: %PROGRAMFILES%\FlightGear\data\Protocol\UAVsim-Protocol.xml
- * 
  * 02 - Copy this XML code into the configuration file:
-
+ 
 <?xml version="1.0"?>
 <PropertyList>
  <generic>
@@ -437,17 +450,15 @@ void destroy() {
  </generic>
 </PropertyList>
   
- * 
- * 03 - Start this application (UAVsim)
- * 
- * 04 - Start FlightGear with the following script (replace the IP address
- *      127.0.0.1 with the address of the machine the this application runs on):
-
-"%PROGRAMFILES%\FlightGear\bin\Win32\fgfs" ^
- "--fg-root=%PROGRAMFILES%\FlightGear\data" ^
- "--generic=socket,in,10,127.0.0.1,5556,tcp,UAVsim-Protocol" ^
- "--generic=socket,out,3,127.0.0.1,5555,tcp,UAVsim-Protocol" ^
- "--timeofday=noon"
+ * 03 - Create a file Start-FlightGear-UAVsim.bat
+ * 04 - Copy this into the batch file (edit ip address if necessary):
  
+"%PROGRAMFILES%\FlightGear\bin\Win32\fgfs" ^
+"--fg-root=%PROGRAMFILES%\FlightGear\data" ^
+"--nmea=socket,out,0.5,127.0.0.1,5557,tcp" ^
+"--generic=socket,in,10,127.0.0.1,5556,tcp,UAVsim-Protocol" ^
+"--generic=socket,out,3,127.0.0.1,5555,tcp,UAVsim-Protocol" ^
+"--timeofday=noon"
+
  */
 

@@ -1,5 +1,5 @@
 /**
- * This is a simple example that demonstrates the usage
+ * This is a simple example that demonstrates some functionality
  * of the UAV Playground.
  * It consist of two virtual joysticks that control some
  * virtual servos.
