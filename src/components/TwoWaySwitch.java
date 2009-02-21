@@ -5,7 +5,7 @@ package jaron.components;
  * two output signals (channels).
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class TwoWaySwitch extends Signal {

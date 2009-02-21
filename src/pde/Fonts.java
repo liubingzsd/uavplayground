@@ -8,7 +8,7 @@ import processing.core.PFont;
  * Environment (PDE) font handling. Its methods are all accessed in a static way.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class Fonts {

@@ -2,6 +2,8 @@ package jaron.uavsim;
 
 import jaron.flightgear.FlightGearReceiver;
 import jaron.flightgear.FlightGearSender;
+import jaron.flightgear.FlightGearNMEAReceiver;
+import jaron.google.GoogleEarthKMLProvider;
 import jaron.gui.Colors;
 import jaron.pde.ArtificialHorizon;
 import jaron.pde.Display;
@@ -151,54 +153,60 @@ import processing.core.PApplet;
  * </pre>
  * <strong>Create the Processing Development Environment application and run it</strong>
  * <pre>
-import jaron.autopilot.*;
-import jaron.gui.*;
 import jaron.flightgear.*;
+import jaron.google.*;
+import jaron.gps.*;
+import jaron.gui.*;
 import jaron.pde.*;
+import jaron.uavsim.*;
 
 // Network connection defaults
-static String FlightGearIP ="127.0.0.1";
-static int FlightGearPort = 5556;
-static int UAVsimPort = 5555;
+String kFlightGearGenericIP ="127.0.0.1";
+int kFlightGearGenericPort = 5556;
+int kFlightGearNMEAPort = 5557;
+int kUAVsimPort = 5555;
+int kKMLProviderPort = 8080;
 
 // Autopilot PID processor default settings
-static final double kElevatorP = -2;
-static final double kElevatorI = -0.3;
-static final double kElevatorD = -0.75;
-static final double kAileronP = -1;
-static final double kAileronI = -0.05;
-static final double kAileronD = -0.75;
+double kElevatorP = -2;
+double kElevatorI = -0.3;
+double kElevatorD = -0.75;
+double kAileronP = -1;
+double kAileronI = -0.05;
+double kAileronD = -0.75;
 
 // Some labels/identifiers
-static final String kLabelPitch = "Pitch (FlightGear)";
-static final String kLabelElevator ="Elevator (Autopilot/PID)";
-static final String kLabelRoll = "Roll (FlightGear)";
-static final String kLabelAileron ="Aileron (Autopilot/PID";
+String kLabelPitch = "Pitch (FlightGear)";
+String kLabelElevator ="Elevator (Autopilot/PID)";
+String kLabelRoll = "Roll (FlightGear)";
+String kLabelAileron ="Aileron (Autopilot/PID";
 
-// PDE GUI defaults
-static final String kWindowTitle = "UAV Playground - UAVsim";
-static final int kWindowWidth = 330;
-static final int kWindowHeight = 620;
-static final int kFrameRate = 30;
+// GUI defaults
+String kWindowTitle = "UAV Playground - UAVsim";
+int kWindowWidth = 330;
+int kWindowHeight = 620;
+int kFrameRate = 30;
 
 // These are all the components that are used for the UAVsim
-ArtificialHorizon horizon;
-Autopilot autopilot;
-Display display;
-FlightGearReceiver receiver;
-FlightGearSender sender;
-Graph graphPitch;
-Graph graphRoll;
-Joystick stickRight;
-Joystick stickLeft;
-RadioButton switchAutopilot;
-RadioButton switchSticks;
-Slider pElevator;
-Slider iElevator;
-Slider dElevator;
-Slider pAileron;
-Slider iAileron;
-Slider dAileron;
+ArtificialHorizon horizon = null;
+Autopilot autopilot = null;
+Display display = null;
+FlightGearReceiver receiver = null;
+FlightGearSender sender = null;
+Graph graphPitch = null;
+Graph graphRoll = null;
+Joystick stickRight = null;
+Joystick stickLeft = null;
+RadioButton switchAutopilot = null;
+RadioButton switchSticks = null;
+Slider pElevator = null;
+Slider iElevator = null;
+Slider dElevator = null;
+Slider pAileron = null;
+Slider iAileron = null;
+Slider dAileron = null;
+FlightGearNMEAReceiver nmeaReceiver = null;
+GoogleEarthKMLProvider kmlProvider = null;
 
 // The PDE setup method
 void setup() {
@@ -218,6 +226,7 @@ void setup() {
   setupHorizon();
   setupSticks();
   setupAutopilot();
+  setupGPS();
   
   // Setup the UAV Playground component dependencies
   setupDependencies();
@@ -226,10 +235,10 @@ void setup() {
 // Flight Gear initialization
 void setupFlightGear() {
   // Setup and start the FlightGear data receiver
-  receiver = new FlightGearReceiver(UAVsimPort);
+  receiver = new FlightGearReceiver(kUAVsimPort);
 
   // Setup and start the FlightGear data sender
-  sender = new FlightGearSender(FlightGearIP, FlightGearPort);
+  sender = new FlightGearSender(kFlightGearGenericIP, kFlightGearGenericPort);
 }
 
 void setupDisplay() {
@@ -282,13 +291,13 @@ void setupSticks() {
 
 void setupAutopilot() {
   // Setup the sliders for the elevator gains
-  pElevator = new Slider(this, "P - Elevator", 75, 330);
+  pElevator = new Slider(this, "P - Elevator", 80, 330);
   pElevator.setBandwidthY(-2, 2);
   pElevator.setValue(kElevatorP); // gain here
-  iElevator = new Slider(this, "I - Elevator", 115, 330);
+  iElevator = new Slider(this, "I - Elevator", 120, 330);
   iElevator.setBandwidthY(-0.3, 0.3);
   iElevator.setValue(kElevatorI); // gain here
-  dElevator = new Slider(this, "D - Elevator", 155, 330);
+  dElevator = new Slider(this, "D - Elevator", 160, 330);
   dElevator.setBandwidthY(-1, 1);
   dElevator.setValue(kElevatorD); // gain here
 
@@ -328,6 +337,16 @@ void setupAutopilot() {
   // Setup an on/off switch and connect the autopilot to it
   switchAutopilot = new RadioButton(this, "Autopilot", 10, 410);
   switchAutopilot.addSignalListener(autopilot.getPower());
+}
+
+void setupGPS() {
+  // Setup the Google KML writer
+  kmlProvider = new GoogleEarthKMLProvider(kKMLProviderPort);
+  kmlProvider.setWritePlacemaks(false);
+
+  // Setup the FlightGear NMEA receiver and connect the KML writer to it
+  nmeaReceiver = new FlightGearNMEAReceiver(kFlightGearNMEAPort);
+  nmeaReceiver.addTrackpointListener(kmlProvider);
 }
 
 void setupDependencies() {
@@ -446,29 +465,30 @@ void mouseMoved() {
 
 // Destroy is called on applet exit
 void destroy() {
-  receiver.setDebug(true);
   receiver.shutDown();
-  
-  sender.setDebug(true);
   sender.shutDown();
+  nmeaReceiver.shutDown();
 }</pre>
  * <strong>Start up FlightGear</strong> (replace the IP address 127.0.0.1 with the
  * address of the machine the Java application runs on)<br>
  * <pre>"%PROGRAMFILES%\FlightGear\bin\Win32\fgfs" ^
  "--fg-root=%PROGRAMFILES%\FlightGear\data" ^
+ "--nmea=socket,out,0.5,127.0.0.1,5557,tcp" ^
  "--generic=socket,in,10,127.0.0.1,5556,tcp,UAVsim-Protocol" ^
  "--generic=socket,out,3,127.0.0.1,5555,tcp,UAVsim-Protocol" ^
  "--timeofday=noon"</pre>
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class UAVsim extends PApplet {
-//Network connection defaults
-  static String FlightGearIP ="127.0.0.1";
-  static int FlightGearPort = 5556;
-  static int UAVsimPort = 5555;
+  // Network connection defaults
+  static final String kFlightGearGenericIP ="127.0.0.1";
+  static final int kFlightGearGenericPort = 5556;
+  static final int kFlightGearNMEAPort = 5557;
+  static final int kUAVsimPort = 5555;
+  static final int kKMLProviderPort = 8080;
 
   // Autopilot PID processor default settings
   static final double kElevatorP = -2;
@@ -508,6 +528,8 @@ public class UAVsim extends PApplet {
   Slider pAileron = null;
   Slider iAileron = null;
   Slider dAileron = null;
+  FlightGearNMEAReceiver nmeaReceiver = null;
+  GoogleEarthKMLProvider kmlProvider = null;
 
   // The PDE setup method
   public void setup() {
@@ -527,6 +549,7 @@ public class UAVsim extends PApplet {
     setupHorizon();
     setupSticks();
     setupAutopilot();
+    setupGPS();
     
     // Setup the UAV Playground component dependencies
     setupDependencies();
@@ -535,10 +558,10 @@ public class UAVsim extends PApplet {
   // Flight Gear initialization
   void setupFlightGear() {
     // Setup and start the FlightGear data receiver
-    receiver = new FlightGearReceiver(UAVsimPort);
+    receiver = new FlightGearReceiver(kUAVsimPort);
 
     // Setup and start the FlightGear data sender
-    sender = new FlightGearSender(FlightGearIP, FlightGearPort);
+    sender = new FlightGearSender(kFlightGearGenericIP, kFlightGearGenericPort);
   }
 
   void setupDisplay() {
@@ -591,13 +614,13 @@ public class UAVsim extends PApplet {
 
   void setupAutopilot() {
     // Setup the sliders for the elevator gains
-    pElevator = new Slider(this, "P - Elevator", 75, 330);
+    pElevator = new Slider(this, "P - Elevator", 80, 330);
     pElevator.setBandwidthY(-2, 2);
     pElevator.setValue(kElevatorP); // gain here
-    iElevator = new Slider(this, "I - Elevator", 115, 330);
+    iElevator = new Slider(this, "I - Elevator", 120, 330);
     iElevator.setBandwidthY(-0.3, 0.3);
     iElevator.setValue(kElevatorI); // gain here
-    dElevator = new Slider(this, "D - Elevator", 155, 330);
+    dElevator = new Slider(this, "D - Elevator", 160, 330);
     dElevator.setBandwidthY(-1, 1);
     dElevator.setValue(kElevatorD); // gain here
 
@@ -637,6 +660,16 @@ public class UAVsim extends PApplet {
     // Setup an on/off switch and connect the autopilot to it
     switchAutopilot = new RadioButton(this, "Autopilot", 10, 410);
     switchAutopilot.addSignalListener(autopilot.getPower());
+  }
+  
+  void setupGPS() {
+    // Setup the Google KML writer
+    kmlProvider = new GoogleEarthKMLProvider(kKMLProviderPort);
+    kmlProvider.setWritePlacemaks(false);
+
+    // Setup the FlightGear NMEA receiver and connect the KML writer to it
+    nmeaReceiver = new FlightGearNMEAReceiver(kFlightGearNMEAPort);
+    nmeaReceiver.addTrackpointListener(kmlProvider);
   }
 
   void setupDependencies() {
@@ -755,24 +788,19 @@ public class UAVsim extends PApplet {
 
   // Destroy is called on applet exit
   public void destroy() {
-    receiver.setDebug(true);
     receiver.shutDown();
-    
-    sender.setDebug(true);
     sender.shutDown();
+    nmeaReceiver.shutDown();
   }
   // through the main method this applet can be started as an application
   public static void main(String args[]) {
-    if (args.length == 1) {
-      FlightGearIP = args[0];
-    }
-    if (args.length > 1) {
-      FlightGearPort = Integer.parseInt(args[1]);
-    }
-    if (args.length > 2) {
-      UAVsimPort = Integer.parseInt(args[2]);
-    }
-    System.out.println("FlightGear IP = " + FlightGearIP + "\nFlightGear port = " + FlightGearPort + "\nUAVsim port = " + UAVsimPort);
+    System.out.println(
+        "FlightGear generic output IP address = " + kFlightGearGenericIP +
+        "\nFlightGear generic output port = " + kFlightGearGenericPort +
+        "\nFlightGear NMEA output port = " + kFlightGearNMEAPort +
+        "\nUAVsim generic output port = " + kUAVsimPort +
+        "\nUAVsim KML output port = " + kKMLProviderPort);
+
     PApplet.main(new String[] { "jaron.uavsim.UAVsim" });
   }
 }
