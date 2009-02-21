@@ -12,7 +12,7 @@ import jaron.components.SignalListener;
  * by swapping the high and the low signal values.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class ActuatorXY extends Rect implements SignalListener {

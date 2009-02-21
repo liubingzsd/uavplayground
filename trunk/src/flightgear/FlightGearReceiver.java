@@ -165,7 +165,7 @@ public void destroy() {
  "--timeofday=noon"</pre>
  *  
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class FlightGearReceiver extends Thread {
@@ -242,7 +242,7 @@ public class FlightGearReceiver extends Thread {
     try {
       server = new ServerSocket(port); // from now on the server listens to incomming connections
     } catch (IOException e) {
-      System.out.println("IOException in FlightGearReceiver(): IOException: " + e.getMessage());
+      System.out.println("IOException in FlightGearReceiver(): " + e.getMessage());
     }
     setDaemon(true);
     start();
@@ -329,7 +329,7 @@ public class FlightGearReceiver extends Thread {
           client = server.accept(); // waits until a connection is established
         }
       } catch (IOException e) {
-          System.out.println("IOException in FlightGearReceiver::run(): IOException: " + e.getMessage());
+          System.out.println("IOException in FlightGearReceiver::run(): " + e.getMessage());
           disconnectClient();
       }
       try { sleep(readDelay); } catch(InterruptedException e) {} 

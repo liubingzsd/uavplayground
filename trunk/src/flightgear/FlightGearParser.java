@@ -7,7 +7,7 @@ import java.util.HashMap;
  * by a subclass.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public abstract class FlightGearParser {

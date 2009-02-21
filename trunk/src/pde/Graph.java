@@ -21,7 +21,7 @@ import processing.core.PGraphics;
  * mechanism as demonstrated in the example of the {@link jaron.uavsim.UAVsim}.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class Graph extends Panel {

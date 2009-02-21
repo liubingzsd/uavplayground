@@ -7,7 +7,7 @@ import java.awt.Rectangle;
  * It is defined by its upper left corner (top, left), a width and a height.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class Rect {

@@ -104,7 +104,7 @@ void mouseMoved() {
 } * </pre>
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class Servo extends Signal {

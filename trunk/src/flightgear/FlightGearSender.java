@@ -129,7 +129,7 @@ public void destroy() {
  "--timeofday=noon"</pre>
  *  
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class FlightGearSender extends Thread {
@@ -188,7 +188,7 @@ public class FlightGearSender extends Thread {
             } catch (UnknownHostException e) {
               System.out.println("UnknownHostException in FlightGearSender::Thread(): " + e.getMessage());
             } catch (IOException e) {
-              if (debug) System.out.println("FlightGearSender::Thread(): IOException: " + e.getMessage()); // suppress IOException message because it's thrown until the connection is established
+              if (debug) System.out.println("IOException in FlightGearSender::Thread(): " + e.getMessage()); // suppress IOException message because it's thrown until the connection is established
             }
           }
           try { sleep(connectionDelay); } catch(InterruptedException e) {} 
@@ -294,12 +294,12 @@ public class FlightGearSender extends Thread {
   @Override
   public void run() {
     while(true) {
-      // send data continuesly as soon as the server is connected
+      // send data continuously as soon as the server is connected
       if (server != null && senderAlive) {
         try {
           OutputStream out = server.getOutputStream(); 
           PrintWriter printer = new PrintWriter(out, true);
-          String data = String.format(new Locale( "en", "US" ), "%1.3f\t%1.3f\t%1.3f\t%1.3f\t", elevator.getValue(), aileron.getValue(), rudder.getValue(), throttle.getValue());
+          String data = String.format(Locale.US, "%1.3f\t%1.3f\t%1.3f\t%1.3f\t", elevator.getValue(), aileron.getValue(), rudder.getValue(), throttle.getValue());
           printer.println(data);
         } catch (IOException e) {
           System.out.println("IOException in FlightGearSender::send(): " + e.getMessage());
@@ -309,6 +309,9 @@ public class FlightGearSender extends Thread {
     }
   }
 
+  /**
+   * Shuts this sender down.
+   */
   public void shutDown() {
     senderAlive = false;
 

@@ -14,7 +14,7 @@ import processing.core.PApplet;
  * <code>Joystick</code>.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class Joystick extends ActuatorXY {

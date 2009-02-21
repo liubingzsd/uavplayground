@@ -10,7 +10,7 @@ import javax.swing.event.EventListenerList;
  * signal change events from other signals.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class Signal implements SignalListener {
@@ -94,9 +94,9 @@ public class Signal implements SignalListener {
     return value;
   }
 
-  /*
-   * Notifies all the listeners that added themselves via the @see addSignalListener
-   * method about a change in the signal's value.
+  /**
+   * Notifies all the listeners that added themselves to the <code>EventListener</code>
+   * mechanism about a change in the signal's value.
    * 
    * @param event     an <code>SignalEvent</code> object containig the changed value of the signal
    */

@@ -30,7 +30,7 @@ import org.xml.sax.SAXException;
  * <code>controls-flight-elevator</code>).
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class FlightGearXMLParser extends FlightGearParser {
@@ -69,11 +69,11 @@ public class FlightGearXMLParser extends FlightGearParser {
           }
         }
       } catch (IOException e) {
-        System.out.println("IOException in DataParser::run(): " + e.getMessage());
+        System.out.println("IOException in FlightGearXMLParser::run(): " + e.getMessage());
       } catch (SAXException e) {
-        System.out.println("SAXException in DataParser::run(): " + e.getMessage());
+        System.out.println("SAXException in FlightGearXMLParser::run(): " + e.getMessage());
       } catch (ParserConfigurationException e) {
-        System.out.println("ParserConfigurationException in DataParser::run(): " + e.getMessage());
+        System.out.println("ParserConfigurationException in FlightGearXMLParser::run(): " + e.getMessage());
       }
     }
 

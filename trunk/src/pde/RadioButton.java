@@ -19,7 +19,7 @@ import processing.core.PApplet;
  * <code>RadioButton</code>.
  * 
  * @author      jarontec gmail com
- * @version     1.0
+ * @version     1.1
  * @since       1.0
  */
 public class RadioButton extends Signal {
