@@ -1,0 +1,26 @@
+UAV Playground
+==============
+
+Since version 1.2
+-----------------
+- Autopilot completely rewritten now supports navigation
+- New Label class
+- Added course field to Trackpoint
+- FlightGearNMEAReceiver now sets km/h instead of knots for the speed over ground
+- FlightGearNMEAReceiver now receives correct value for speed over ground
+- RadioButton enhanced
+- All constants in upper case now
+
+Since version 1.1
+-----------------
+- The update frequency can now be altered in these classes:
+  - Autopilot
+  - FlightGearNMEAReceiver
+  - FlightGearReceiver
+  - FlightGearSender
+
+Since version 1.0
+-----------------
+- New GPS NMEA data import via a network connection to FlightGear
+- New GPS tracking in Google Earth via a HTTP connection to the UAV Playground
+

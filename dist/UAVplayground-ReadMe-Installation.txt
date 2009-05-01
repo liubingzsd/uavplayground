@@ -1,10 +1,5 @@
-UAV Playground 1.1
-==================
-
-Changes since version 1.0
--------------------------
-- New GPS NMEA data import via a network connection to FlightGear
-- New GPS tracking in Google Earth via a HTTP connection to the UAV Playground
+UAV Playground
+==============
 
 Prerequisite
 ------------
@@ -33,8 +28,8 @@ If you want to run UAVsim as a standalone application
 - [Run Google Earth by double-clicking the Start-GoogleEarth-Tracking.kml file
   or just open the file in Google Earth] (optional)
   
-About UAV Playground
-====================
+About the UAV Playground
+------------------------
 This is my approach to Unmanned Aerial Vehicles (UAV). The overall goal is to
 gain an understanding of the various aspects of UAVs like microcontrollers,
 simulators and remote controlled model airplanes. Therefore I needed an
