@@ -1,13 +1,6 @@
-UAV Playground 1.1
-==================
+UAV Playground
+==============
 
-Changes since version 1.0
--------------------------
-- New GPS NMEA data import via a network connection to FlightGear
-- New GPS tracking in Google Earth via a HTTP connection to the UAV Playground
-
-About UAV Playground 1.1
-========================
 This is my approach to Unmanned Aerial Vehicles (UAV). The overall goal is to
 gain an understanding of the various aspects of UAVs like microcontrollers,
 simulators and remote controlled model airplanes. Therefore I needed an
