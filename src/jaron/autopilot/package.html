@@ -1,0 +1,50 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+</head>
+<body bgcolor="white">
+
+Provides the classes for the UAV Playground autopilot that includes stabilization
+and navigation.<br>
+Every autopilot component provides its output data to the <code>FlightData</code>
+component and an unlimited number of components can receive this data as their
+input. The event handling mechanism of the <code>Signal</code> class is used
+to publish the data whenever a certain value has changed.<br>
+<h3>FlightData Input/Output</h3>
+<table border="1" cellpadding="4">
+<tr>
+  <td><strong>Compontent</strong></td>
+  <td><strong>Input</strong></td>
+  <td><strong>Output</strong></td>
+</tr>
+<tr>
+  <td valign="top"><strong>MotionSensor</strong></td>
+  <td valign="top">&nbsp;</td>
+  <td valign="top">pitchAngle (->MotionController)<br>rollAngle (->MotionController)<br>airSpeed (->Display)<br>pitchAngularRate (->Display)<br>rollAngularRate (->Display)<br>yawAngularRate (->Display)</td>
+</tr>
+<tr>
+  <td valign="top"><strong>GpsReceiver</strong></td>
+  <td valign="top">&nbsp;</td>
+  <td valign="top">latitude (->MissionController)<br>longitude (.>MissionController)<br>courseOverGround (->MissionController)<br>speedOverGround (->MissionController)<br>altitudeAbsolute (->Display)<br>satellites (unused)</td>
+</tr>
+<tr>
+  <td valign="top"><strong>ServoController</strong></td>
+  <td valign="top">aileronOutput (MotionController->)<br>elevatorOutput (MotionController->)<br>rudderOutput (Stick->)<br>throttleOutput (Stick->)</td>
+  <td valign="top">&nbsp;</td>
+</tr>
+<tr>
+  <td valign="top"><strong>MotionController</strong></td>
+  <td valign="top">aileronInput (Stick->)<br>elevatorInput (Stick->)<br>pitchAngle (MotionSensor->)<br>rollAngle (MotionSensor->)<br>pitchAnglePreset (MotionController->)<br>rollAnglePreset (MotionController->)<br>pitchTrim (unused)<br>rollTrim (unused)</td>
+  <td valign="top">aileronOutput (->ServoController)<br>elevatorOutput (->ServoController)</td>
+</tr>
+<tr>
+  <td valign="top"><strong>MissionController</strong></td>
+  <td valign="top">latitude (GpsReceiver->)<br>longitude (GpsReceiver->)<br>courseOverGround (GpsReceiver->)<br>speedOverGround (GpsReceiver->)</td>
+  <td valign="top">targetCourse (->Display)<br>pitchAnglePreset (->MotionController)<br>rollAnglePreset (->MotionController)</td>
+</tr>
+</table>
+
+@since       1.2
+
+</body>
+</html>
