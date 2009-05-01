@@ -8,13 +8,7 @@
 import jaron.gui.*;
 import jaron.pde.*;
 
-// PDE GUI defaults
-static final String kWindowTitle = "UAV Playground - Servos";
-static final int kWindowWidth = 360;
-static final int kWindowHeight = 325;
-static final int kFrameRate = 30;
-
-// These are all the components that are used for this application
+// The UAV Playground components that are used by this application
 Joystick stickRight;
 Joystick stickLeft;
 Servo servoRudder;
@@ -22,15 +16,13 @@ Servo servoThrottle;
 Servo servoElevator;
 Servo servoAileron;
 
-// The PDE setup method
+// The PDE setup method that is called once at startup
 void setup() {
-  // Setup the PDE display panel
-  size(kWindowWidth, kWindowHeight);
-  background(Colors.kColorGrayWindow);
-  if (frame != null) frame.setTitle(kWindowTitle);
-  
-  // Setup the PDE graphics options
-  frameRate(kFrameRate);
+  // Setup the PDE environment
+  size(360, 325);
+  background(Colors.GRAY_WINDOW);
+  if (frame != null) frame.setTitle("UAV Playground - Servos");
+  frameRate(30);
   smooth();
 
   // Setup the left stick (throttle and rudder)
@@ -56,7 +48,7 @@ void setup() {
   stickRight.addListenerY(servoElevator);
 }
 
-// The PDE draw method
+// The PDE draw method is called periodically
 void draw() {
   stickRight.draw();
   stickLeft.draw();
