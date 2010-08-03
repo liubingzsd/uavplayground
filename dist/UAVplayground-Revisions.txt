@@ -1,6 +1,10 @@
 UAV Playground
 ==============
 
+Since version 1.2.1
+-------------------
+- The file UAVsim.pde now contains Processing code instead of regular Java
+
 Since version 1.2
 -----------------
 - Autopilot completely rewritten now supports navigation
